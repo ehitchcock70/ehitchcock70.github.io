@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eric Hitchcock | Cybersecurity Portfolio</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <span class="brand">EH</span>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="cloud-security.html">Cloud Security</a>
+            <a href="index.html#home-labs">Home Labs</a>
+            <a href="index.html#tools-projects">Tools &amp; Projects</a>
+        </div>
+    </nav>
+
+    <header>
+        <h1>Eric Hitchcock</h1>
+        <p class="subtitle">Cloud Security Engineer</p>
+        <p>Hello, I'm Eric Hitchcock. I'm beginning my path as a Cloud Security Engineer, backed by five to six years of professional experience in IT, help desk, and networking, including two years in enterprise security. Alongside that work, I keep a steady stream of hands-on projects going in my home lab and guided lab environments.</p>
+        <p>My experience spans cloud, identity, and endpoint security across Microsoft and AWS environments, with a focus on Zero Trust and role-based access control (RBAC). I also have experience supporting ISO 27001, SOC 2, HIPAA, and FERPA compliance.</p>
+        <div class="skills">
+            <span class="tag">Azure</span>
+            <span class="tag">Entra ID</span>
+            <span class="tag">Microsoft 365</span>
+            <span class="tag">Intune</span>
+            <span class="tag">Autopilot</span>
+            <span class="tag">Microsoft Sentinel</span>
+            <span class="tag">Microsoft Defender</span>
+            <span class="tag">Microsoft Authenticator</span>
+            <span class="tag">Okta</span>
+            <span class="tag">AWS</span>
+            <span class="tag">Kandji</span>
+            <span class="tag cyan">Zero Trust</span>
+            <span class="tag cyan">RBAC</span>
+            <span class="tag cyan">ISO 27001</span>
+            <span class="tag cyan">SOC 2</span>
+            <span class="tag cyan">HIPAA</span>
+            <span class="tag cyan">FERPA</span>
+        </div>
+        <div class="links">
+            <a href="https://github.com/ehitchcock70" target="_blank">GitHub</a> &bull;
+            <a href="https://www.linkedin.com/in/eric-hitchcock/" target="_blank">LinkedIn</a>
+        </div>
+    </header>
+
+    <main>
+        <h2 class="section-title"><span>Cloud Security</span></h2>
+        <div class="grid">
+            <a class="card wide" href="cloud-security.html">
+                <h3>Cloud Security</h3>
+                <p>Write ups, how to guides, and hands on labs for securing Microsoft Azure and Amazon Web Services: SIEM deployment, threat detection, KQL hunting, identity, logging, and incident response in the cloud.</p>
+                <div>
+                    <span class="tag">Microsoft Azure</span>
+                    <span class="tag">AWS</span>
+                    <span class="tag">Microsoft Sentinel</span>
+                    <span class="tag cyan">TryHackMe</span>
+                </div>
+                <span class="more">Explore Cloud Security &rarr;</span>
+            </a>
+        </div>
+
+        <h2 class="section-title" id="home-labs"><span>Home Labs</span></h2>
+        <p class="section-intro">Home server projects that power my security lab and self hosted services.</p>
+        <div class="grid">
+            <div class="card">
+                <h3>Proxmox</h3>
+                <p>Virtualization platform hosting my security lab: SOC tooling, Windows Server domain, attack and forensics VMs, all segmented on isolated networks.</p>
+                <div>
+                    <span class="tag">Proxmox VE</span>
+                    <span class="tag">Virtualization</span>
+                    <span class="tag cyan">Home Lab</span>
+                </div>
+                <a class="btn" href="proxmox.html">View Proxmox &rarr;</a>
+            </div>
+
+            <div class="card">
+                <h3>TrueNAS</h3>
+                <p>Self hosted NAS with ZFS storage, snapshots, media services, and a secure remote access design that avoids exposing services directly to the internet.</p>
+                <div>
+                    <span class="tag">TrueNAS</span>
+                    <span class="tag">ZFS</span>
+                    <span class="tag cyan">Secure Remote Access</span>
+                </div>
+                <a class="btn" href="truenas.html">View TrueNAS &rarr;</a>
+            </div>
+        </div>
+
+        <h2 class="section-title" id="tools-projects"><span>Tools &amp; Projects</span></h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Wazuh SIEM Deployment</h3>
+                <p>Deployed Wazuh to collect and correlate endpoint and server logs, tune detection rules, and build alerting for suspicious authentication and file integrity events.</p>
+                <div>
+                    <span class="tag">Wazuh</span>
+                    <span class="tag">SIEM</span>
+                    <span class="tag cyan">Blue Teaming</span>
+                </div>
+                <a class="btn" href="wazuh.html">View Wazuh &rarr;</a>
+            </div>
+
+            <div class="card">
+                <h3>User Access Review Automation</h3>
+                <p>Designed Jira Service Management automation workflows for user access reviews and onboarding/offboarding, reducing manual effort and tightening least privilege enforcement.</p>
+                <div>
+                    <span class="tag">Jira Service Management</span>
+                    <span class="tag">Automation</span>
+                    <span class="tag cyan">IAM</span>
+                </div>
+                <a class="btn" href="uar-automation.html">View UAR Automation &rarr;</a>
+            </div>
+
+            <div class="card wide">
+                <h3>Endpoint Management &amp; Hardening</h3>
+                <p>Managed Windows and macOS fleets with Intune and Kandji, deploying configuration profiles and compliance policies alongside Microsoft Defender and Okta identity controls.</p>
+                <div>
+                    <span class="tag">Intune</span>
+                    <span class="tag">Kandji</span>
+                    <span class="tag">Defender</span>
+                    <span class="tag cyan">Okta</span>
+                </div>
+                <a class="btn" href="endpoint-management.html">View Endpoint Management &rarr;</a>
+            </div>
+        </div>
+
+        <h2 class="section-title"><span>Identity Access Management</span></h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Okta</h3>
+                <p>Administered Okta for single sign on and user lifecycle management, enforcing MFA with Okta Verify and assigning application access through groups to support least privilege.</p>
+                <div>
+                    <span class="tag">SSO</span>
+                    <span class="tag">Lifecycle Management</span>
+                    <span class="tag cyan">Okta Verify</span>
+                </div>
+                <a class="btn" href="okta.html">View Okta &rarr;</a>
+            </div>
+
+            <div class="card">
+                <h3>Microsoft MFA</h3>
+                <p>Secured Microsoft 365 and Azure sign ins with Entra ID multifactor authentication, using Microsoft Authenticator with number matching and Conditional Access policies to block risky sign ins.</p>
+                <div>
+                    <span class="tag">Entra ID</span>
+                    <span class="tag">Conditional Access</span>
+                    <span class="tag cyan">Microsoft Authenticator</span>
+                </div>
+                <a class="btn" href="microsoft-mfa.html">View Microsoft MFA &rarr;</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>&copy; 2026 Eric Hitchcock</footer>
+
+</body>
+</html>
