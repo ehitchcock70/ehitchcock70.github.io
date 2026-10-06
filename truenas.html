@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrueNAS Home Server | Eric Hitchcock</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <span class="brand">EH</span>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="cloud-security.html">Cloud Security</a>
+            <a href="index.html#home-labs">Home Labs</a>
+            <a href="index.html#tools-projects">Tools &amp; Projects</a>
+        </div>
+    </nav>
+
+    <header>
+        <h1>TrueNAS Home Server</h1>
+        <p class="subtitle">Secure Storage, Self Hosting &amp; Remote Access</p>
+        <p>My TrueNAS build provides ZFS backed storage for the home lab, hosts self hosted services like Jellyfin, and uses a remote access design that keeps every service off the public internet.</p>
+
+        <div class="stats">
+            <div class="stat"><div class="num">ZFS</div><div class="label">Data Integrity</div></div>
+            <div class="stat"><div class="num">VPN</div><div class="label">Remote Access</div></div>
+            <div class="stat"><div class="num">0</div><div class="label">Open Ports</div></div>
+            <div class="stat"><div class="num">3-2-1</div><div class="label">Backup Strategy</div></div>
+        </div>
+
+        <div class="toc">
+            <a href="#remote">Remote Access Design</a>
+            <a href="#storage">Storage Setup</a>
+            <a href="#services">Services</a>
+            <a href="#hardening">Hardening &amp; Protection</a>
+            <a href="#screenshots">Screenshots &amp; Notes</a>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ===================== REMOTE ACCESS ===================== -->
+        <h2 class="section-title" id="remote"><span>Remote Access Design</span></h2>
+        <p class="section-intro">Nothing is port forwarded. Remote devices reach the server only through an authenticated, encrypted VPN tunnel.</p>
+        <div class="grid">
+            <div class="card wide">
+                <h3>Access Flow</h3>
+                <div class="flow">
+                    <div class="step"><strong>Remote Device</strong>Laptop / Phone</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step secure"><strong>VPN Tunnel</strong>WireGuard / Tailscale + MFA</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step"><strong>Home Network</strong>Ubiquiti Firewall</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step secure"><strong>TrueNAS</strong>SMB / Apps / Web UI</div>
+                </div>
+                <p class="blocked-note">Direct internet traffic to TrueNAS, its web UI, SSH, or SMB is blocked at the firewall.</p>
+                <div>
+                    <span class="tag">WireGuard</span>
+                    <span class="tag">Tailscale</span>
+                    <span class="tag cyan">Zero Open Ports</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== STORAGE ===================== -->
+        <h2 class="section-title" id="storage"><span>Storage Setup</span></h2>
+        <div class="grid">
+
+            <div class="card">
+                <h3>Create a ZFS Pool</h3>
+                <h4>How To</h4>
+                <ol>
+                    <li>Go to <strong>Storage &rarr; Create Pool</strong>.</li>
+                    <li>Choose a layout: <strong>Mirror</strong> for 2 disks or <strong>RAIDZ1/RAIDZ2</strong> for 3+ disks.</li>
+                    <li>Add the data disks and confirm.</li>
+                    <li>Schedule <strong>scrubs</strong> to detect silent corruption.</li>
+                    <li>Schedule <strong>SMART tests</strong> to catch failing drives early.</li>
+                </ol>
+                <div>
+                    <span class="tag">ZFS</span>
+                    <span class="tag cyan">RAIDZ</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Datasets &amp; Permissions</h3>
+                <h4>How To</h4>
+                <ol>
+                    <li>Create separate datasets: <code>media</code>, <code>backups</code>, <code>lab-isos</code>, <code>documents</code>.</li>
+                    <li>Create local users and groups under <strong>Credentials</strong>.</li>
+                    <li>Set ACLs so each group only reaches the datasets it needs.</li>
+                    <li>Share with <strong>SMB</strong>; leave SMB1 disabled.</li>
+                </ol>
+                <div>
+                    <span class="tag">Datasets</span>
+                    <span class="tag cyan">ACLs</span>
+                </div>
+            </div>
+
+            <div class="card wide">
+                <h3>Useful ZFS Commands</h3>
+<pre><code># Pool health and errors
+zpool status -v
+
+# Capacity by dataset
+zfs list -o name,used,avail,mountpoint
+
+# Manual snapshot and list
+zfs snapshot tank/documents@pre-change
+zfs list -t snapshot</code></pre>
+                <div>
+                    <span class="tag">CLI</span>
+                    <span class="tag cyan">Monitoring</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===================== SERVICES ===================== -->
+        <h2 class="section-title" id="services"><span>Services</span></h2>
+        <div class="grid">
+
+            <div class="card">
+                <h3>Jellyfin Media Server</h3>
+                <ol>
+                    <li>Open <strong>Apps &rarr; Discover Apps</strong> and install Jellyfin.</li>
+                    <li>Mount the <code>media</code> dataset as read only.</li>
+                    <li>Run the app as a dedicated non root user.</li>
+                    <li>Access it remotely only over the VPN.</li>
+                </ol>
+                <div>
+                    <span class="tag">Jellyfin</span>
+                    <span class="tag cyan">Apps</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Lab Storage for Proxmox</h3>
+                <p>An NFS share from TrueNAS stores ISOs and <code>vzdump</code> backups for the <a href="proxmox.html">Proxmox lab</a>, keeping backups off the hypervisor's own disks.</p>
+                <div>
+                    <span class="tag">NFS</span>
+                    <span class="tag cyan">Backup Target</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===================== HARDENING ===================== -->
+        <h2 class="section-title" id="hardening"><span>Hardening &amp; Protection</span></h2>
+        <div class="grid">
+
+            <div class="card">
+                <h3>Secure the Server</h3>
+                <ul>
+                    <li>Enable two factor authentication for the admin account.</li>
+                    <li>Keep SSH disabled unless needed; use keys, not passwords.</li>
+                    <li>Bind the web UI to the LAN interface only and use HTTPS.</li>
+                    <li>Configure email alerts for pool, disk, and update events.</li>
+                    <li>Apply TrueNAS updates on a regular schedule.</li>
+                </ul>
+                <div>
+                    <span class="tag">2FA</span>
+                    <span class="tag cyan">Alerting</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Ransomware Protection</h3>
+                <ul>
+                    <li>Periodic snapshot tasks on every dataset (hourly and daily).</li>
+                    <li>Snapshots are read only, so encrypted files can be rolled back.</li>
+                    <li>Replicate snapshots to a second system or offsite target.</li>
+                    <li>Follow the <strong>3-2-1 rule</strong>: 3 copies, 2 media types, 1 offsite.</li>
+                </ul>
+                <div>
+                    <span class="tag">Snapshots</span>
+                    <span class="tag cyan">Replication</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===================== SCREENSHOTS & NOTES ===================== -->
+        <h2 class="section-title" id="screenshots"><span>Screenshots &amp; Notes</span></h2>
+        <p class="section-intro">Evidence from my own environment. Click any screenshot to view it full size.</p>
+        <div class="shots">
+            <figure class="shot">
+                <a href="images/truenas/pool-status.png" target="_blank"><img src="images/truenas/pool-status.png" alt="Pool Status" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/truenas/pool-status.png</div>
+                <figcaption><strong>Pool Status</strong><span>ZFS pool layout and health</span></figcaption>
+            </figure>
+            <figure class="shot">
+                <a href="images/truenas/datasets.png" target="_blank"><img src="images/truenas/datasets.png" alt="Datasets &amp; ACLs" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/truenas/datasets.png</div>
+                <figcaption><strong>Datasets &amp; ACLs</strong><span>Dataset structure and permissions</span></figcaption>
+            </figure>
+            <figure class="shot">
+                <a href="images/truenas/snapshot-tasks.png" target="_blank"><img src="images/truenas/snapshot-tasks.png" alt="Snapshot Tasks" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/truenas/snapshot-tasks.png</div>
+                <figcaption><strong>Snapshot Tasks</strong><span>Periodic snapshot schedule</span></figcaption>
+            </figure>
+            <figure class="shot">
+                <a href="images/truenas/vpn-access.png" target="_blank"><img src="images/truenas/vpn-access.png" alt="Remote Access" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/truenas/vpn-access.png</div>
+                <figcaption><strong>Remote Access</strong><span>VPN connection to the server</span></figcaption>
+            </figure>
+        </div>
+        <!-- To add another screenshot: copy one <figure> block above, change the file name, title, and caption.
+             Add class "shot full" to make a screenshot span the full width. -->
+        <div class="notes-card">
+            <h3>Notes</h3>
+            <ul>
+                    <li>Drive layout and capacity</li>
+                    <li>Services running</li>
+                    <li>Backup and restore test results</li>
+            </ul>
+            <!-- To add more notes: copy a <li> line above, or add a new <h4> heading with its own <ul> or <p> below. -->
+        </div>
+    </main>
+
+    <footer>&copy; 2026 Eric Hitchcock &bull; <a href="index.html">Back to Home</a></footer>
+
+    <script src="js/main.js" defer></script>
+</body>
+</html>

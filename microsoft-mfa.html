@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft MFA | Eric Hitchcock</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <span class="brand">EH</span>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="cloud-security.html">Cloud Security</a>
+            <a href="index.html#home-labs">Home Labs</a>
+            <a href="index.html#tools-projects">Tools &amp; Projects</a>
+        </div>
+    </nav>
+
+    <header>
+        <h1>Microsoft MFA</h1>
+        <p class="subtitle">Entra ID Authentication &amp; Conditional Access</p>
+        <p>Microsoft Entra ID multifactor authentication protects Microsoft 365 and Azure sign ins. This page covers which methods to use, how to enforce MFA with Conditional Access, and how to monitor it.</p>
+
+        <div class="stats">
+            <div class="stat"><div class="num">Entra</div><div class="label">Identity Platform</div></div>
+            <div class="stat"><div class="num">CA</div><div class="label">Conditional Access</div></div>
+            <div class="stat"><div class="num">FIDO2</div><div class="label">Phishing Resistant</div></div>
+            <div class="stat"><div class="num">KQL</div><div class="label">Sign In Hunting</div></div>
+        </div>
+
+        <div class="toc">
+            <a href="#methods">Method Strength</a>
+            <a href="#ca">Conditional Access</a>
+            <a href="#rollout">Rollout</a>
+            <a href="#monitor">Monitoring</a>
+            <a href="#screenshots">Screenshots &amp; Notes</a>
+        </div>
+    </header>
+
+    <main>
+
+        <h2 class="section-title" id="methods"><span>Method Strength</span></h2>
+        <p class="section-intro">Not all MFA is equal. Phishing resistant methods should be the goal, with SMS as a last resort.</p>
+        <div class="grid">
+            <div class="card wide">
+                <h3>MFA Methods Ranked</h3>
+                <div class="bar-row">
+                    <div class="bar-label"><span>FIDO2 Security Key / Passkey</span><span>Phishing resistant</span></div>
+                    <div class="bar-track"><div class="bar-fill w-100"></div></div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label"><span>Windows Hello for Business</span><span>Phishing resistant</span></div>
+                    <div class="bar-track"><div class="bar-fill w-95"></div></div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label"><span>Authenticator with Number Matching</span><span>Strong</span></div>
+                    <div class="bar-track"><div class="bar-fill w-75"></div></div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label"><span>Software OATH Token</span><span>Moderate</span></div>
+                    <div class="bar-track"><div class="bar-fill mid w-55"></div></div>
+                </div>
+                <div class="bar-row">
+                    <div class="bar-label"><span>SMS / Voice Call</span><span>Weak</span></div>
+                    <div class="bar-track"><div class="bar-fill weak w-25"></div></div>
+                </div>
+                <div>
+                    <span class="tag">Authentication Methods</span>
+                    <span class="tag cyan">Passkeys</span>
+                </div>
+            </div>
+
+        </div>
+
+        <h2 class="section-title" id="ca"><span>Conditional Access</span></h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Require MFA for All Users</h3>
+                <h4>How To</h4>
+                <ol>
+                    <li>Go to <strong>Entra ID &rarr; Protection &rarr; Conditional Access</strong>.</li>
+                    <li>Create a policy targeting <strong>All users</strong>.</li>
+                    <li>Exclude two emergency break glass accounts.</li>
+                    <li>Target <strong>All resources</strong>.</li>
+                    <li>Grant: <strong>Require multifactor authentication</strong>.</li>
+                    <li>Start in <strong>Report only</strong>, review, then turn on.</li>
+                </ol>
+                <div>
+                    <span class="tag">Conditional Access</span>
+                    <span class="tag cyan">Break Glass</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Companion Policies</h3>
+                <ul>
+                    <li>Block legacy authentication protocols.</li>
+                    <li>Require phishing resistant MFA for admin roles.</li>
+                    <li>Require compliant devices for sensitive apps.</li>
+                    <li>Require MFA to register security info.</li>
+                </ul>
+                <div>
+                    <span class="tag">Legacy Auth</span>
+                    <span class="tag cyan">Admin Protection</span>
+                </div>
+            </div>
+
+        </div>
+
+        <h2 class="section-title" id="rollout"><span>Rollout</span></h2>
+        <div class="grid">
+            <div class="card wide">
+                <h3>Deployment Steps</h3>
+                <h4>How To</h4>
+                <ol>
+                    <li>Disable Security Defaults if moving to Conditional Access.</li>
+                    <li>Enable methods in the <strong>Authentication methods</strong> policy.</li>
+                    <li>Communicate the change and share registration instructions.</li>
+                    <li>Pilot with IT, then expand by department.</li>
+                    <li>Enable number matching and location context to stop MFA fatigue attacks.</li>
+                </ol>
+                <div>
+                    <span class="tag">Change Management</span>
+                    <span class="tag cyan">MFA Fatigue</span>
+                </div>
+            </div>
+
+        </div>
+
+        <h2 class="section-title" id="monitor"><span>Monitoring</span></h2>
+        <div class="grid">
+            <div class="card wide">
+                <h3>Sign Ins Without MFA</h3>
+                <p>Find successful sign ins that only used single factor authentication.</p>
+<pre><code>SigninLogs
+| where TimeGenerated &gt; ago(7d)
+| where ResultType == "0"
+| where AuthenticationRequirement == "singleFactorAuthentication"
+| summarize Count = count() by UserPrincipalName, AppDisplayName
+| sort by Count desc</code></pre>
+                <div>
+                    <span class="tag">KQL</span>
+                    <span class="tag cyan">Sentinel</span>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ===================== SCREENSHOTS & NOTES ===================== -->
+        <h2 class="section-title" id="screenshots"><span>Screenshots &amp; Notes</span></h2>
+        <p class="section-intro">Evidence from my own environment. Click any screenshot to view it full size.</p>
+        <div class="shots">
+            <figure class="shot">
+                <a href="images/mfa/ca-policy.png" target="_blank"><img src="images/mfa/ca-policy.png" alt="Conditional Access Policy" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/mfa/ca-policy.png</div>
+                <figcaption><strong>Conditional Access Policy</strong><span>Require MFA policy settings</span></figcaption>
+            </figure>
+            <figure class="shot">
+                <a href="images/mfa/auth-methods.png" target="_blank"><img src="images/mfa/auth-methods.png" alt="Authentication Methods" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/mfa/auth-methods.png</div>
+                <figcaption><strong>Authentication Methods</strong><span>Enabled methods and number matching</span></figcaption>
+            </figure>
+            <figure class="shot">
+                <a href="images/mfa/signin-logs.png" target="_blank"><img src="images/mfa/signin-logs.png" alt="Sign In Logs" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/mfa/signin-logs.png</div>
+                <figcaption><strong>Sign In Logs</strong><span>MFA details on a sign in (sanitized)</span></figcaption>
+            </figure>
+            <figure class="shot">
+                <a href="images/mfa/report-only.png" target="_blank"><img src="images/mfa/report-only.png" alt="Report Only Results" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/mfa/report-only.png</div>
+                <figcaption><strong>Report Only Results</strong><span>Policy impact before enforcement</span></figcaption>
+            </figure>
+        </div>
+        <!-- To add another screenshot: copy one <figure> block above, change the file name, title, and caption.
+             Add class "shot full" to make a screenshot span the full width. -->
+        <div class="notes-card">
+            <h3>Notes</h3>
+            <ul>
+                    <li>Remove usernames and tenant IDs before uploading</li>
+                    <li>Rollout phases</li>
+                    <li>Registration and adoption rates</li>
+            </ul>
+            <!-- To add more notes: copy a <li> line above, or add a new <h4> heading with its own <ul> or <p> below. -->
+        </div>
+    </main>
+
+    <footer>&copy; 2026 Eric Hitchcock &bull; <a href="index.html">Back to Home</a></footer>
+
+    <script src="js/main.js" defer></script>
+</body>
+</html>

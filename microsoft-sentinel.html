@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Sentinel | Eric Hitchcock</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <nav>
+        <span class="brand">EH</span>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="cloud-security.html">Cloud Security</a>
+            <a href="index.html#home-labs">Home Labs</a>
+            <a href="index.html#tools-projects">Tools &amp; Projects</a>
+        </div>
+    </nav>
+
+    <header>
+        <div class="breadcrumb"><a href="index.html">Home</a> / <a href="cloud-security.html">Cloud Security</a> / <a href="azure-cloud-security.html">Azure</a> / Microsoft Sentinel</div>
+        <h1>Microsoft Sentinel</h1>
+        <p class="subtitle">TryHackMe Module Write Up &amp; How To Guides</p>
+        <p>Microsoft Sentinel is Microsoft's cloud native SIEM and SOAR platform. This page covers all five rooms of the TryHackMe module: what Sentinel is, how to deploy it, how to ingest data, how to detect threats, and how to investigate and respond to incidents.</p>
+
+        <div class="stats">
+            <div class="stat"><div class="num">5</div><div class="label">Rooms</div></div>
+            <div class="stat"><div class="num">SIEM</div><div class="label">Detect</div></div>
+            <div class="stat"><div class="num">SOAR</div><div class="label">Respond</div></div>
+            <div class="stat"><div class="num">KQL</div><div class="label">Query Language</div></div>
+        </div>
+
+        <div class="toc">
+            <a href="#overview">Overview</a>
+            <a href="#intro">1. Introduction</a>
+            <a href="#deploy">2. Deploy</a>
+            <a href="#ingest">3. Ingest Data</a>
+            <a href="#detect">4. Detect</a>
+            <a href="#investigate">5. Investigate</a>
+            <a href="#screenshots">Screenshots &amp; Notes</a>
+        </div>
+    </header>
+
+    <main>
+
+        <!-- ===================== OVERVIEW ===================== -->
+        <h2 class="section-title" id="overview"><span>How Sentinel Works</span></h2>
+        <p class="section-intro">Data flows in through connectors, lands in a Log Analytics workspace, gets matched by analytics rules, and becomes incidents that analysts investigate and automation responds to.</p>
+        <div class="grid">
+            <div class="card wide">
+                <h3>Data to Response Pipeline</h3>
+                <div class="flow">
+                    <div class="step"><strong>Sources</strong>Entra ID, M365, VMs, Firewalls</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step key"><strong>Connectors</strong>Content hub</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step"><strong>Workspace</strong>Log Analytics</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step key"><strong>Analytics</strong>KQL Rules</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step"><strong>Incidents</strong>Investigation</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step key"><strong>Automation</strong>Playbooks</div>
+                </div>
+                <div>
+                    <span class="tag">Pipeline</span>
+                    <span class="tag cyan">Architecture</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== ROOM 1 ===================== -->
+        <h2 class="section-title" id="intro"><span>Room 1: Introduction</span></h2>
+        <p class="section-intro">What Microsoft Sentinel is and how it fits into the role of a Security Operations Analyst.</p>
+        <div class="grid">
+            <div class="card">
+                <h3>Key Concepts</h3>
+                <ul>
+                    <li><strong>SIEM:</strong> collects and correlates logs from across the environment.</li>
+                    <li><strong>SOAR:</strong> automates response through playbooks and automation rules.</li>
+                    <li>Built on a <strong>Log Analytics workspace</strong> and queried with KQL.</li>
+                    <li>Cloud native: no servers to build, scales with data volume.</li>
+                </ul>
+                <div>
+                    <span class="tag">SIEM</span>
+                    <span class="tag cyan">SOAR</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Core Building Blocks</h3>
+                <ul>
+                    <li><strong>Data connectors:</strong> bring logs in.</li>
+                    <li><strong>Analytics rules:</strong> detect threats.</li>
+                    <li><strong>Incidents:</strong> group related alerts for triage.</li>
+                    <li><strong>Workbooks:</strong> dashboards and visualizations.</li>
+                    <li><strong>Hunting:</strong> proactive KQL searches.</li>
+                    <li><strong>Playbooks:</strong> automated response with Logic Apps.</li>
+                </ul>
+                <div>
+                    <span class="tag cyan">Components</span>
+                </div>
+            </div>
+
+            <div class="card wide">
+                <h3>The SOC Analyst's Role</h3>
+                <p>A Security Operations Analyst uses Sentinel daily to triage incidents, investigate alerts, hunt for threats that rules missed, tune noisy detections, and run or build automated responses. Sentinel becomes the central console where every security signal is reviewed.</p>
+                <div>
+                    <span class="tag">Triage</span>
+                    <span class="tag">Hunting</span>
+                    <span class="tag cyan">Tuning</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== ROOM 2 ===================== -->
+        <h2 class="section-title" id="deploy"><span>Room 2: Deploy</span></h2>
+        <p class="section-intro">Everything needed for the initial Microsoft Sentinel deployment.</p>
+        <div class="grid">
+            <div class="card">
+                <h3>Deployment Steps</h3>
+                <h4>How To</h4>
+                <ol>
+                    <li>Create a resource group in the Azure portal.</li>
+                    <li>Create a <strong>Log Analytics workspace</strong> in that resource group and region.</li>
+                    <li>Search for <strong>Microsoft Sentinel</strong>, select <em>Create</em>, and add it to the workspace.</li>
+                    <li>Set data retention on the workspace.</li>
+                    <li>Install solutions from <strong>Content hub</strong>.</li>
+                </ol>
+                <div>
+                    <span class="tag">Log Analytics</span>
+                    <span class="tag cyan">Setup</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Access Roles</h3>
+                <table>
+                    <tr><th>Role</th><th>Can Do</th></tr>
+                    <tr><td>Sentinel Reader</td><td>View data, incidents, workbooks</td></tr>
+                    <tr><td>Sentinel Responder</td><td>Reader rights plus manage incidents</td></tr>
+                    <tr><td>Sentinel Contributor</td><td>Responder rights plus create rules and workbooks</td></tr>
+                    <tr><td>Automation Contributor</td><td>Lets Sentinel attach playbooks to automation rules</td></tr>
+                </table>
+                <div>
+                    <span class="tag">RBAC</span>
+                    <span class="tag cyan">Least Privilege</span>
+                </div>
+            </div>
+
+            <div class="card wide">
+                <h3>Planning Considerations</h3>
+                <ul>
+                    <li><strong>Workspace design:</strong> one central workspace is simplest unless data residency or separation rules require more.</li>
+                    <li><strong>Region:</strong> place the workspace where compliance requirements allow.</li>
+                    <li><strong>Cost:</strong> billing is based on data ingested and retained, so plan which logs matter most.</li>
+                    <li><strong>Retention:</strong> balance investigation needs against storage cost.</li>
+                </ul>
+                <div>
+                    <span class="tag">Cost</span>
+                    <span class="tag cyan">Architecture</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== ROOM 3 ===================== -->
+        <h2 class="section-title" id="ingest"><span>Room 3: Ingest Data</span></h2>
+        <p class="section-intro">No logs, no correlation, no analysis, no action. This room covers getting log data into Sentinel.</p>
+        <div class="grid">
+            <div class="card">
+                <h3>Connect a Data Source</h3>
+                <h4>How To</h4>
+                <ol>
+                    <li>Open <strong>Content hub</strong> and install the solution for your source.</li>
+                    <li>Go to <strong>Data connectors</strong> and open the connector.</li>
+                    <li>Follow the connector's configuration steps.</li>
+                    <li>For VMs, install the <strong>Azure Monitor Agent</strong> and create a <strong>Data Collection Rule</strong>.</li>
+                    <li>For firewalls and appliances, forward Syslog or CEF through a Linux log forwarder.</li>
+                </ol>
+                <div>
+                    <span class="tag">AMA</span>
+                    <span class="tag cyan">DCR</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Verify Ingestion</h3>
+                <p>Confirm data is arriving and see which tables are busiest.</p>
+<pre><code>Usage
+| where TimeGenerated &gt; ago(1d)
+| summarize GB = sum(Quantity) / 1024
+    by DataType
+| sort by GB desc</code></pre>
+                <div>
+                    <span class="tag cyan">Validation</span>
+                </div>
+            </div>
+
+            <div class="card wide">
+                <h3>Common Connectors &amp; Tables</h3>
+                <table>
+                    <tr><th>Data Source</th><th>Table</th></tr>
+                    <tr><td>Microsoft Entra ID sign ins</td><td><code>SigninLogs</code></td></tr>
+                    <tr><td>Microsoft Entra ID audit</td><td><code>AuditLogs</code></td></tr>
+                    <tr><td>Azure subscription activity</td><td><code>AzureActivity</code></td></tr>
+                    <tr><td>Windows Security Events</td><td><code>SecurityEvent</code></td></tr>
+                    <tr><td>Linux Syslog</td><td><code>Syslog</code></td></tr>
+                    <tr><td>Firewalls via CEF</td><td><code>CommonSecurityLog</code></td></tr>
+                    <tr><td>Office 365</td><td><code>OfficeActivity</code></td></tr>
+                </table>
+                <div>
+                    <span class="tag">Data Connectors</span>
+                    <span class="tag cyan">Tables</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== ROOM 4 ===================== -->
+        <h2 class="section-title" id="detect"><span>Room 4: Detect</span></h2>
+        <p class="section-intro">How Sentinel detects threats and turns them into actionable incidents.</p>
+        <div class="grid">
+            <div class="card">
+                <h3>Analytics Rule Types</h3>
+                <ul>
+                    <li><strong>Scheduled:</strong> KQL runs on a set interval.</li>
+                    <li><strong>Near Real Time (NRT):</strong> runs about every minute.</li>
+                    <li><strong>Microsoft Security:</strong> creates incidents from Defender alerts.</li>
+                    <li><strong>Fusion:</strong> machine learning for multistage attacks.</li>
+                    <li><strong>Anomaly:</strong> flags unusual behavior.</li>
+                    <li><strong>Threat Intelligence:</strong> matches logs to known indicators.</li>
+                </ul>
+                <div>
+                    <span class="tag cyan">Rule Types</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Create a Scheduled Rule</h3>
+                <h4>How To</h4>
+                <ol>
+                    <li>Go to <strong>Analytics</strong> &rarr; <em>Create</em> &rarr; <em>Scheduled query rule</em>.</li>
+                    <li>Name it, set severity, and map MITRE ATT&amp;CK tactics.</li>
+                    <li>Paste the KQL and set frequency and lookback.</li>
+                    <li>Map entities: Account, Host, IP.</li>
+                    <li>Enable incident creation and alert grouping.</li>
+                </ol>
+                <div>
+                    <span class="tag">Analytics Rules</span>
+                    <span class="tag cyan">MITRE ATT&amp;CK</span>
+                </div>
+            </div>
+
+            <div class="card wide">
+                <h3>Example Rule: Password Spray</h3>
+                <p>One IP failing sign ins against many different accounts in a short window.</p>
+<pre><code>SigninLogs
+| where TimeGenerated &gt; ago(1h)
+| where ResultType in ("50126", "50053")
+| summarize Accounts = dcount(UserPrincipalName),
+            Attempts = count()
+    by IPAddress
+| where Accounts &gt; 10
+| project IPAddress, Accounts, Attempts</code></pre>
+                <div>
+                    <span class="tag">KQL</span>
+                    <span class="tag cyan">T1110.003</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== ROOM 5 ===================== -->
+        <h2 class="section-title" id="investigate"><span>Room 5: Investigate</span></h2>
+        <p class="section-intro">Investigating and managing incidents from triage through closure.</p>
+        <div class="grid">
+            <div class="card wide">
+                <h3>Incident Workflow</h3>
+                <div class="flow">
+                    <div class="step"><strong>Triage</strong>Assign &amp; set Active</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step key"><strong>Review</strong>Alerts &amp; entities</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step"><strong>Investigate</strong>Graph &amp; timeline</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step key"><strong>Respond</strong>Playbooks</div>
+                    <div class="arrow">&rarr;</div>
+                    <div class="step"><strong>Close</strong>Classify &amp; comment</div>
+                </div>
+                <div>
+                    <span class="tag">Incidents</span>
+                    <span class="tag cyan">Workflow</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Investigation Steps</h3>
+                <h4>How To</h4>
+                <ol>
+                    <li>Open the incident and assign an owner.</li>
+                    <li>Review alerts, evidence, and mapped entities.</li>
+                    <li>Use the <strong>investigation graph</strong> to pivot between users, hosts, and IPs.</li>
+                    <li>Run follow up KQL in <strong>Logs</strong> to scope the activity.</li>
+                    <li>Close as True Positive, Benign Positive, or False Positive.</li>
+                </ol>
+                <div>
+                    <span class="tag cyan">Investigation Graph</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Automation Rules vs Playbooks</h3>
+                <ul>
+                    <li><strong>Automation rules:</strong> lightweight actions such as assigning owners, changing severity, tagging, or closing known benign incidents.</li>
+                    <li><strong>Playbooks:</strong> Logic Apps for complex response, such as disabling a user, isolating a device, or posting to Teams.</li>
+                    <li>Automation rules can trigger playbooks.</li>
+                </ul>
+                <div>
+                    <span class="tag">Logic Apps</span>
+                    <span class="tag cyan">SOAR</span>
+                </div>
+            </div>
+
+            <div class="card wide">
+                <h3>Pivot Query: Everything a Suspicious IP Did</h3>
+<pre><code>let badIP = "203.0.113.45";
+union isfuzzy=true SigninLogs, AzureActivity, OfficeActivity
+| where TimeGenerated &gt; ago(7d)
+| where IPAddress == badIP or CallerIpAddress == badIP or ClientIP == badIP
+| project TimeGenerated, Type, UserPrincipalName, Caller, OperationName
+| sort by TimeGenerated asc</code></pre>
+                <div>
+                    <span class="tag">Threat Hunting</span>
+                    <span class="tag cyan">Scoping</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== SCREENSHOTS & NOTES ===================== -->
+        <h2 class="section-title" id="screenshots"><span>Screenshots &amp; Notes</span></h2>
+        <p class="section-intro">Evidence from my own environment. Click any screenshot to view it full size.</p>
+        <div class="shots">
+            <figure class="shot">
+                <a href="images/sentinel/workspace.png" target="_blank"><img src="images/sentinel/workspace.png" alt="Workspace Deployment" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/sentinel/workspace.png</div>
+                <figcaption><strong>Workspace Deployment</strong><span>Log Analytics workspace with Sentinel enabled</span></figcaption>
+            </figure>
+            <figure class="shot">
+                <a href="images/sentinel/data-connectors.png" target="_blank"><img src="images/sentinel/data-connectors.png" alt="Data Connectors" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/sentinel/data-connectors.png</div>
+                <figcaption><strong>Data Connectors</strong><span>Connected sources and ingestion status</span></figcaption>
+            </figure>
+            <figure class="shot">
+                <a href="images/sentinel/analytics-rule.png" target="_blank"><img src="images/sentinel/analytics-rule.png" alt="Analytics Rule" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/sentinel/analytics-rule.png</div>
+                <figcaption><strong>Analytics Rule</strong><span>Scheduled rule configuration and KQL</span></figcaption>
+            </figure>
+            <figure class="shot">
+                <a href="images/sentinel/incident-graph.png" target="_blank"><img src="images/sentinel/incident-graph.png" alt="Investigation Graph" loading="lazy"></a>
+                <div class="placeholder">Add screenshot:<br>images/sentinel/incident-graph.png</div>
+                <figcaption><strong>Investigation Graph</strong><span>Entity pivot during an incident</span></figcaption>
+            </figure>
+        </div>
+        <!-- To add another screenshot: copy one <figure> block above, change the file name, title, and caption.
+             Add class "shot full" to make a screenshot span the full width. -->
+        <div class="notes-card">
+            <h3>Notes</h3>
+            <ul>
+                    <li>Connectors enabled in the lab</li>
+                    <li>Rule tuning decisions</li>
+                    <li>Incident timeline and classification</li>
+            </ul>
+            <!-- To add more notes: copy a <li> line above, or add a new <h4> heading with its own <ul> or <p> below. -->
+        </div>
+    </main>
+
+    <footer>&copy; 2026 Eric Hitchcock &bull; <a href="azure-cloud-security.html">Back to Azure</a></footer>
+
+    <script src="js/main.js" defer></script>
+</body>
+</html>
