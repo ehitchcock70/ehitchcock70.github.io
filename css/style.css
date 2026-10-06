@@ -151,7 +151,26 @@ h1 {
 .breadcrumb a:hover { color: var(--accent-color); }
 
 .links { margin-top: 1.5rem; }
-.skills { margin-top: 0.5rem; }
+.skills {
+    margin: 1.25rem 0 0;
+    border-top: 1px solid var(--border-color);
+}
+.skill-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+@media (min-width: 700px) {
+    .skill-row { grid-template-columns: 13rem 1fr; gap: 1rem; }
+}
+.skill-row dt {
+    color: var(--accent-2);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.skill-row dd { margin: 0; color: var(--text-color); }
 
 /* ---------- 5. Grid and cards ---------- */
 .grid {
@@ -171,7 +190,9 @@ h1 {
     padding: 1.5rem;
     transition: transform 0.2s, border-color 0.2s;
 }
-.card:hover {
+/* Static cards stay still; only clickable cards react to hover */
+a.card:hover,
+.card:has(a.btn):hover {
     transform: translateY(-4px);
     border-color: var(--accent-color);
 }
@@ -203,19 +224,28 @@ a.card .more {
 }
 
 /* ---------- 6. Tags and buttons ---------- */
+/* Tags are plain text labels, not buttons: no fill, no border, one muted color */
 .tag {
-    background-color: rgba(96, 165, 250, 0.12);
-    color: var(--accent-color);
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    display: inline-block;
-    margin-right: 0.5rem;
-    margin-top: 0.5rem;
+    display: inline;
+    background: none;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    color: var(--muted-color);
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    cursor: default;
 }
-.tag.cyan {
-    background-color: rgba(34, 211, 238, 0.12);
-    color: var(--accent-2);
+.tag.cyan { color: var(--muted-color); }
+.tag + .tag::before {
+    content: "\00B7";
+    margin: 0 0.5rem;
+    color: var(--border-color);
+}
+.card > div:has(> .tag) {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
 }
 .btn {
     display: inline-block;
