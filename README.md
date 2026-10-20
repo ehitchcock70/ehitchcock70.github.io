@@ -1,4 +1,4 @@
-# Security Portfolio: [Your Name]
+# Security Portfolio: Eric Hitchcock
 
 Documented cloud security investigations, built in a live Azure tenant
 (Mad Hat Labs, a multi-user training environment).
